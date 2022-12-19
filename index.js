@@ -71,8 +71,6 @@ const getRealType = (value) => {
             return 'Array';
         } else if (value instanceof Boolean) {
             return 'Boolean';
-        } else if (value instanceof Symbol) {
-            return Symbol;
         } else if (value === null) {
             return 'null';
         } else if (value instanceof RegExp) {
@@ -107,14 +105,6 @@ const allItemsHaveTheSameType = (arr) => {
     if (realTypeElement.size === 1) {
         return true;
     }
-    if (realTypeElement.size === 2) {
-        const iterator = realTypeElement.values();
-        const valueFr = iterator.next().value;
-        const valueSc = iterator.next().value;
-        if (valueFr.toLowerCase() === valueSc.toLowerCase()) {
-            return false;
-        }
-    }
     return false;
     // Return true if all items of array have the same type
 };
@@ -136,12 +126,22 @@ const everyItemHasAUniqueRealType = (arr) => {
 
 const countRealTypes = (arr) => {
     const realTypeItem = getRealTypesOfItems(arr);
-    const uniqueItems = new Set(getRealTypesOfItems(arr));
+    realTypeItem.sort();
+    const szArr = realTypeItem.length;
     const arrayResult = [];
-    const element = (value) => {
-        arrayResult.push([value, realTypeItem.filter((x) => x === value).length]);
-    };
-    uniqueItems.forEach(element);
+    let cntElement = 1;
+    let value = realTypeItem[0];
+    for (let i = 1; i < szArr; i++) {
+        const currentValue = realTypeItem[i];
+        if (currentValue === value) {
+            cntElement += 1;
+        } else {
+            arrayResult.push([value, cntElement]);
+            cntElement = 1;
+        }
+        value = currentValue;
+    }
+    arrayResult.push([value, cntElement]);
     return arrayResult;
     // Return an array of arrays with a type and count of items
     // with this type in the input array, sorted by type.
@@ -260,3 +260,42 @@ test('Counted unique types are sorted', countRealTypes([{}, null, true, !null, !
 // Add several positive and negative tests
 // Just test
 // comments
+
+const someType = [
+    1 / 0,
+    'sfsdf' === 'sdsadsa',
+    'Privet',
+    [1, 2, 3, 4],
+    new RegExp(''),
+    new Set([1, 2, 3, 4]),
+    new Boolean(true),
+    Symbol('Hello'),
+    // Add values of different types like boolean, object, date, NaN and so on
+];
+testBlock('someTest addition test');
+
+test('Check basic types', getTypesOfItems(someType), [
+    'number',
+    'boolean',
+    'string',
+    'object',
+    'object',
+    'object',
+    'object',
+    'symbol',
+]);
+
+test('Check Real types', getRealTypesOfItems(someType), [
+    'Infinity',
+    'boolean',
+    'string',
+    'Array',
+    'RegExp',
+    'Set',
+    'Boolean',
+    'symbol',
+]);
+
+test('All values are different', everyItemHasAUniqueRealType([new Array([]), new Set(), new String()]), true);
+
+test('All values have the same type', everyItemHasAUniqueRealType([true, 5 > 3, '123' === 123]), false);
