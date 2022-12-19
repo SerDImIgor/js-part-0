@@ -13,14 +13,25 @@ const areEqual = (a, b) => {
     const flagB = Array.isArray(b);
     if (flagA && flagB) {
         if (Array.isArray(a[0]) && Array.isArray(b[0])) {
-            const convertToString = (value) => {
-                return `${value[0]}_${value[1]}`;
-            };
-            const strArrayA = a.map(convertToString);
-            strArrayA.sort();
-            const strArrayB = b.map(convertToString);
-            strArrayB.sort();
-            return arraysEqual(strArrayA, strArrayB);
+            if (a.length !== b.length) {
+                return false;
+            }
+            for (let i = 0; i < a.length; i++) {
+                const fA = Array.isArray(a[i]);
+                const fB = Array.isArray(b[i]);
+                if (fA && fB) {
+                    if (arraysEqual(a[i], b[i]) === false) {
+                        return false;
+                    }
+                } else if (!fA && !fB) {
+                    if (a !== b) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+            return true;
         }
         return arraysEqual(a, b);
     } else if (!flagA && !flagB) {
@@ -52,10 +63,7 @@ const getType = (value) => {
 };
 
 const getTypesOfItems = (arr) => {
-    const typeForElement = (value) => {
-        return getType(value);
-    };
-    return arr.map(typeForElement);
+    return arr.map((value) => getType(value));
     // Return array with types of items of given array
 };
 
@@ -98,23 +106,14 @@ const getRealType = (value) => {
 };
 
 const allItemsHaveTheSameType = (arr) => {
-    const typeForElement = (value) => {
-        return getRealType(value);
-    };
-    const realTypeElement = new Set(arr.map(typeForElement));
-    if (realTypeElement.size === 1) {
-        return true;
-    }
-    return false;
+    const realTypeElement = new Set(arr.map((value) => getRealType(value)));
+    return realTypeElement.size === 1;
     // Return true if all items of array have the same type
 };
 
 const getRealTypesOfItems = (arr) => {
     // Return array with real types of items of given array
-    const typeForElement = (value) => {
-        return getRealType(value);
-    };
-    return arr.map(typeForElement);
+    return arr.map((value) => getRealType(value));
 };
 
 const everyItemHasAUniqueRealType = (arr) => {
@@ -127,11 +126,10 @@ const everyItemHasAUniqueRealType = (arr) => {
 const countRealTypes = (arr) => {
     const realTypeItem = getRealTypesOfItems(arr);
     realTypeItem.sort();
-    const szArr = realTypeItem.length;
     const arrayResult = [];
     let cntElement = 1;
     let value = realTypeItem[0];
-    for (let i = 1; i < szArr; i++) {
+    for (let i = 1; i < realTypeItem.length; i++) {
         const currentValue = realTypeItem[i];
         if (currentValue === value) {
             cntElement += 1;
@@ -258,44 +256,3 @@ test('Counted unique types are sorted', countRealTypes([{}, null, true, !null, !
 ]);
 
 // Add several positive and negative tests
-// Just test
-// comments
-
-const someType = [
-    1 / 0,
-    'sfsdf' === 'sdsadsa',
-    'Privet',
-    [1, 2, 3, 4],
-    new RegExp(''),
-    new Set([1, 2, 3, 4]),
-    new Boolean(true),
-    Symbol('Hello'),
-    // Add values of different types like boolean, object, date, NaN and so on
-];
-testBlock('someTest addition test');
-
-test('Check basic types', getTypesOfItems(someType), [
-    'number',
-    'boolean',
-    'string',
-    'object',
-    'object',
-    'object',
-    'object',
-    'symbol',
-]);
-
-test('Check Real types', getRealTypesOfItems(someType), [
-    'Infinity',
-    'boolean',
-    'string',
-    'Array',
-    'RegExp',
-    'Set',
-    'Boolean',
-    'symbol',
-]);
-
-test('All values are different', everyItemHasAUniqueRealType([new Array([]), new Set(), new String()]), true);
-
-test('All values have the same type', everyItemHasAUniqueRealType([true, 5 > 3, '123' === 123]), false);
