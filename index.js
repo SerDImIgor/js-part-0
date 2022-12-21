@@ -17,17 +17,7 @@ const areEqual = (a, b) => {
                 return false;
             }
             for (let i = 0; i < a.length; i++) {
-                const fA = Array.isArray(a[i]);
-                const fB = Array.isArray(b[i]);
-                if (fA && fB) {
-                    if (arraysEqual(a[i], b[i]) === false) {
-                        return false;
-                    }
-                } else if (!fA && !fB) {
-                    if (a !== b) {
-                        return false;
-                    }
-                } else {
+                if (arraysEqual(a[i], b[i]) === false) {
                     return false;
                 }
             }
