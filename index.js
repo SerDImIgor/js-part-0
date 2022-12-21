@@ -17,8 +17,12 @@ const areEqual = (a, b) => {
                 return false;
             }
             for (let i = 0; i < a.length; i++) {
-                if (arraysEqual(a[i], b[i]) === false) {
-                    return false;
+                const fA = Array.isArray(a[i]);
+                const fB = Array.isArray(b[i]);
+                if (fA && fB) {
+                    if (arraysEqual(a[i], b[i]) === false) {
+                        return false;
+                    }
                 }
             }
             return true;
