@@ -23,6 +23,8 @@ const areEqual = (a, b) => {
                     if (arraysEqual(a[i], b[i]) === false) {
                         return false;
                     }
+                } else {
+                    return false;
                 }
             }
             return true;
