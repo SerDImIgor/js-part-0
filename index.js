@@ -13,7 +13,7 @@ const areEqual = (a, b) => {
         const fA = Array.isArray(a[i]);
         const fB = Array.isArray(b[i]);
         if (fA && fB) {
-            if (a[i].length !== b[i].length) {
+            if (!(a[i].length === b[i].length && a[i].length === 2)) {
                 return false;
             }
             if (!(a[i][0] === b[i][0] && a[i][1] === b[i][1])) {
