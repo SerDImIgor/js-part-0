@@ -4,38 +4,30 @@ const testBlock = (name) => {
     console.groupEnd();
     console.group(`# ${name}\n`);
 };
-const arraysEqual = (a, b) => {
-    return a.length === b.length && a.every((el, ix) => el === b[ix]);
-};
 
 const areEqual = (a, b) => {
-    const flagA = Array.isArray(a);
-    const flagB = Array.isArray(b);
-    if (flagA && flagB) {
-        if (Array.isArray(a[0]) && Array.isArray(b[0])) {
-            if (a.length !== b.length) {
+    if (a.length !== b.length) {
+        return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+        const fA = Array.isArray(a[i]);
+        const fB = Array.isArray(b[i]);
+        if (fA && fB) {
+            if (a[i].length !== b[i].length) {
                 return false;
             }
-            for (let i = 0; i < a.length; i++) {
-                const fA = Array.isArray(a[i]);
-                const fB = Array.isArray(b[i]);
-                if (fA && fB) {
-                    if (arraysEqual(a[i], b[i]) === false) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+            if (!(a[i][0] === b[i][0] && a[i][1] === b[i][1])) {
+                return false;
             }
-            return true;
+        } else if (!fA && !fB) {
+            if (a[i] !== b[i]) {
+                return false;
+            }
+        } else {
+            return false;
         }
-        return arraysEqual(a, b);
-    } else if (!flagA && !flagB) {
-        return a === b;
     }
-    return false;
-    // Compare arrays of primitives
-    // Remember: [] !== []
+    return true;
 };
 
 const test = (whatWeTest, actualResult, expectedResult) => {
